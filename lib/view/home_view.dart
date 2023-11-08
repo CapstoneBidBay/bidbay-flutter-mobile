@@ -1,16 +1,18 @@
-import 'dart:convert';
+import 'dart:async';
 
 import 'package:bidbay_mobile/common/values.dart';
-import 'package:bidbay_mobile/models/yard_simple.dart';
+import 'package:bidbay_mobile/cubit/auction_list_cubit.dart';
+import 'package:bidbay_mobile/models/auction_simple_model.dart';
+import 'package:bidbay_mobile/models/filter_model.dart';
 import 'package:bidbay_mobile/view/login.dart';
+import 'package:bidbay_mobile/widgets/auction_card.dart';
 import 'package:bidbay_mobile/widgets/content_title.dart';
-import 'package:bidbay_mobile/widgets/yard_card.dart';
+import 'package:bidbay_mobile/widgets/filter_form.dart';
+import 'package:bidbay_mobile/widgets/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:stomp_dart_client/stomp.dart';
-import 'package:stomp_dart_client/stomp_config.dart';
-import 'package:stomp_dart_client/stomp_frame.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../cubit/authentication_cubit.dart';
 
 class HomePage extends StatefulWidget {
@@ -21,20 +23,16 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  List<YardSimple> yards = [
-    YardSimple('1', 'Áo quần giày dép', 'Giá rẻ', 'District', '02d 15h 10m', '', 100, ['https://firebasestorage.googleapis.com/v0/b/bidbay-project.appspot.com/o/95dc4c8a-5984-4737-b556-925fb2668247.jpg?alt=media']),
-    YardSimple('1', 'Áo quần giày dép', 'Giá rẻ', 'District', '02d 15h 10m', '', 100, ['https://firebasestorage.googleapis.com/v0/b/bidbay-project.appspot.com/o/95dc4c8a-5984-4737-b556-925fb2668247.jpg?alt=media']),
-    YardSimple('1', 'Áo quần giày dép', 'Giá rẻ', 'District', '02d 15h 10m', '', 100, ['https://firebasestorage.googleapis.com/v0/b/bidbay-project.appspot.com/o/95dc4c8a-5984-4737-b556-925fb2668247.jpg?alt=media']),
-    YardSimple('1', 'Áo quần giày dép', 'Giá rẻ', 'District', '02d 15h 10m', '', 100, ['https://firebasestorage.googleapis.com/v0/b/bidbay-project.appspot.com/o/95dc4c8a-5984-4737-b556-925fb2668247.jpg?alt=media']),
-    YardSimple('1', 'Áo quần giày dép', 'Giá rẻ', 'District', '02d 15h 10m', '', 100, ['https://firebasestorage.googleapis.com/v0/b/bidbay-project.appspot.com/o/95dc4c8a-5984-4737-b556-925fb2668247.jpg?alt=media'])
-  ];
+  List<Auction> auctions = [];
 
+  String searchKey = "";
+  FilterData filterData = FilterData();
+
+  Timer? _debounce;
 
   @override
   void initState(){
     super.initState();
-    //addWebsocketListener();
-    //readJson();
   }
 
   @override
@@ -42,23 +40,11 @@ class HomePageState extends State<HomePage> {
     return buildHomePage();
   }
 
-  // void addWebsocketListener() {
-  //   MyStompService stompService = MyStompService.getInstance();
-  //   stompService.addListenerCallback('/topic/specific-user/$USER_ID', (frame) async {
-  //     print("Got websocket message");
-  //     final cubit = BlocProvider.of<IncomingMatchCubit>(context);
-  //     cubit.getIncomingMatches();
-  //     Fluttertoast.showToast(
-  //       msg: frame.body!,
-  //       toastLength: Toast.LENGTH_SHORT,
-  //       gravity: ToastGravity.BOTTOM,
-  //       timeInSecForIosWeb: 1,
-  //       backgroundColor: Color.fromARGB(255, 0, 255, 115),
-  //       textColor: Color.fromARGB(255, 0, 0, 0),
-  //       fontSize: 16.0
-  //     );
-  //   });
-  // }
+  @override
+  void dispose(){
+    _debounce?.cancel();
+    super.dispose();
+  }
 
   Widget buildHomePage() {
     final cubit = BlocProvider.of<AuthenticationCubit>(context);
@@ -72,13 +58,13 @@ class HomePageState extends State<HomePage> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: Text('Bidbay'),
+        title: const Text('Bidbay'),
         actions: <Widget>[
           IconButton(
               onPressed: () {
                 handleLogout(context);
               },
-              icon: Icon(Icons.logout))
+              icon: const Icon(Icons.logout))
         ],
       ),
       body: SingleChildScrollView(
@@ -88,20 +74,20 @@ class HomePageState extends State<HomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
               const Text('Đấu giá ngay...', style: headerStyle),
               const SizedBox(height: 10),
-              //const ContentTitle(title: 'Top Rating Yards'),
-              SizedBox(
+              buildSearchSection(),
+              const SizedBox(
                 height: 10,
               ),
               buildStaticYardList(),
-              const ContentTitle(title: 'Đang diễn ra...'),
+              const ContentTitle(title: 'Đấu giá nổi bật...'),
               buildStaticYardList(),
               //DistrictProvinceSelection(key: UniqueKey(),),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               //buildYardList(),
@@ -111,67 +97,124 @@ class HomePageState extends State<HomePage> {
       ),
     );
   }
+  Widget buildSearchSection() {
+    return Column(
+      children: [
+        SizedBox(
+          child: TextField(
+            onChanged: _onSearchChange,
+            style: GoogleFonts.poppins(
+              color: const Color(0xff020202),
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              letterSpacing: 0.5,
+            ),
+            autofocus: true,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: const Color(0xfff1f1f1),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide.none,
+              ),
+              hintText: "Search for Items",
+              hintStyle: GoogleFonts.poppins(
+                  color: const Color(0xffb2b2b2),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  letterSpacing: 0.5,
+                  decorationThickness: 6),
+              prefixIcon: const Icon(Icons.search),
+              suffixIcon: IconButton(onPressed: (){
+                showFilter();
+              }, icon: const Icon(Icons.filter_list_alt), padding: const EdgeInsets.all(0), constraints: const BoxConstraints(),),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
-   Widget buildStaticYardList() {
-    //final yardListStaticCubit = BlocProvider.of<YardListStaticCubit>(context);
-    //yardListStaticCubit.getYardList(null, null);
+  Widget buildStaticYardList() {
+    AuctionListStaticCubit auctionListStaticCubit = BlocProvider.of<AuctionListStaticCubit>(context);
+    auctionListStaticCubit.getYardList(searchKey, filterData);
 
-    // return BlocBuilder<YardListStaticCubit, YardListStaticState>(
-    //   builder: (context, state){
-    //     if(state is LoadingYardListStaticState) {
-    //       return Loading();
-    //     }
-    //     if(state is LoadedYardListStaticState) {
-    //       yards = state.yards;
-    //     }
-
+    return BlocBuilder<AuctionListStaticCubit, AuctionListStaticState>(
+      builder: (context, state){
+        if(state is LoadingAuctionListStaticState){
+          return const Loading();
+        }
+        if(state is LoadedAuctionListStaticState){
+          auctions = state.auctions;
+        }
         return Column(
           children: [
             SizedBox(
-              height: 350,
+              height: 300,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 physics: const BouncingScrollPhysics(),
-                itemCount: yards.length,
+                itemCount: auctions.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return YardCard(yard: yards[index]);
+                  return AuctionCard(auctionData: auctions[index]);
                 },
               ),
             ),
           ],
         );
-      }
+      },
+    );
   }
 
-  // Widget buildYardList() {
-  //   final yardListCubit = BlocProvider.of<YardListCubit>(context);
-  //   yardListCubit.getYardList(null, null);
+    void showFilter() {
+      showModalBottomSheet<void>(
+        isScrollControlled: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            color: const Color.fromARGB(19, 119, 127, 143),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  SingleChildScrollView(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        FilterForm(onSubmit: onFilterSubmit, data: filterData)
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+      );
+    }
 
-  //   return BlocBuilder<YardListCubit, YardListState>(
-  //     builder: (context, state){
-  //       if(state is LoadingYardListState) {
-  //         return Loading();
-  //       }
-  //       if(state is LoadedYardListState) {
-  //         yards = state.yards;
-  //       }
-
-  //       return Column(
-  //         children: [
-  //           SizedBox(
-  //             height: 350,
-  //             child: ListView.builder(
-  //               scrollDirection: Axis.horizontal,
-  //               physics: const BouncingScrollPhysics(),
-  //               itemCount: yards.length,
-  //               itemBuilder: (BuildContext context, int index) {
-  //                 return YardCard(yard: yards[index]);
-  //               },
-  //             ),
-  //           ),
-  //         ],
-  //       );
-  //     }
-  //   );
-  // }
-//}
+    void onFilterSubmit(FilterData filterDataModel){
+      setState(() {
+        filterData = filterDataModel;
+      });
+      AuctionListStaticCubit auctionListStaticCubit = BlocProvider.of<AuctionListStaticCubit>(context);
+      auctionListStaticCubit.getYardList(searchKey, filterDataModel);
+      Navigator.of(context).pop();
+    }
+    void _onSearchChange(String query){
+      _debounce?.cancel();
+      _debounce = Timer(const Duration(milliseconds: 1500), () {
+        AuctionListStaticCubit auctionListStaticCubit = BlocProvider.of<AuctionListStaticCubit>(context);
+        auctionListStaticCubit.getYardList(query, filterData);
+        setState(() {
+          searchKey = query;
+        });
+      });
+    }
+  }

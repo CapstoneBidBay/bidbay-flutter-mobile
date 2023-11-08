@@ -37,7 +37,6 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     try {
       return await userService.verifyOtp(otp, jwtToken);
     } catch(e) {
-      print('a $e');
       rethrow;
     }
   }

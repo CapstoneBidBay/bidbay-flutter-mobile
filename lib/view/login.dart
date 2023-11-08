@@ -30,7 +30,7 @@ class LoginScreen extends StatelessWidget {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
         body: Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         image: DecorationImage(
           image: AssetImage(
               'assets/background.jpg'),
@@ -52,7 +52,7 @@ class LoginScreen extends StatelessWidget {
             ),
           ),
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
@@ -63,23 +63,21 @@ class LoginScreen extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(),
+          const SizedBox(),
           Flex(
             mainAxisAlignment: MainAxisAlignment.center,
             direction: Axis.vertical,
             children: [
-              Container(
-                child: Text.rich(
-                  TextSpan(
-                    children: <TextSpan>[
-                      TextSpan(
-                          text: 'Xin chào!',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 30,
-                              color: Colors.white)),
-                    ],
-                  ),
+              const Text.rich(
+                TextSpan(
+                  children: <TextSpan>[
+                    TextSpan(
+                        text: 'Xin chào!',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 30,
+                            color: Colors.white)),
+                  ],
                 ),
               ),
               Container(
@@ -98,8 +96,8 @@ class LoginScreen extends StatelessWidget {
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(top: 60, bottom: 40),
-                child: Center(
+                margin: const EdgeInsets.only(top: 60, bottom: 40),
+                child: const Center(
                   child: Text.rich(
                     TextSpan(
                       children: <TextSpan>[

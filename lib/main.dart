@@ -1,4 +1,5 @@
 import 'package:bidbay_mobile/bloc_providers.dart';
+import 'package:bidbay_mobile/service/auction_service.dart';
 import 'package:bidbay_mobile/view/home_view.dart';
 import 'package:bidbay_mobile/view/login.dart';
 import 'package:bidbay_mobile/view/signup.dart';
@@ -9,6 +10,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
   setupLocator();
+  AuctionService auctionService = getIt<AuctionService>();
+  auctionService.getBrands();
+  auctionService.getCategories();
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
@@ -108,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
         BottomNavigationBarItem(
             icon: Icon(Icons.home), label: 'Trang chủ'),
         BottomNavigationBarItem(icon: Icon(Icons.shopping_bag), label: 'Đã mua'),
-        BottomNavigationBarItem(icon: Icon(Icons.lock_clock), label: 'Đấu giá'),
+        BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Thông báo'),
         BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Cá nhân'),
       ],
     );

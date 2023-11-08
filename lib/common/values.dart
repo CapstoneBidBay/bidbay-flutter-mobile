@@ -29,7 +29,6 @@ const jwtSecret = 'booking_mobile_app';
 
 const String apiServer = String.fromEnvironment(
     'SERVER',
-    // defaultValue: 'https://d2bawuzpgqlp7v.cloudfront.net/api/v1',
     defaultValue: 'https://bidbaybe.site/api/v1',
 );
 
@@ -40,3 +39,8 @@ String IS_CONFIRM_VALUE = 'false';
 String JWT_TOKEN_VALUE = '';
 String REFRESH_TOKEN = '';
 String USER_ID = '';
+
+const AUTO_PLACE_BID = "Auto Place Bid";
+const MANUAL_PLACE_BID = "Manual Place Bid";
+
+const NO_IMAGE_URL = "https://firebasestorage.googleapis.com/v0/b/bidbay-project.appspot.com/o/No-Image-Placeholder.svg.png?alt=media";

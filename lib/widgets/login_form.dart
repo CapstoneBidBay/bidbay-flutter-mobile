@@ -7,6 +7,7 @@ class LoginForm extends StatefulWidget {
   const LoginForm({super.key, required this.buttonText, required this.onSubmit, this.isSignup = false});
 
   @override
+  // ignore: library_private_types_in_public_api
   _LoginFormState createState() => _LoginFormState();
 }
 
@@ -37,31 +38,28 @@ class _LoginFormState extends State<LoginForm> {
               floatingLabelBehavior: FloatingLabelBehavior.never,
               filled: true,
               labelText: 'Số điện thoại',
-              hintStyle: TextStyle(color: Colors.white),
-              border: OutlineInputBorder(),
+              hintStyle: const TextStyle(color: Colors.white),
+              border: const OutlineInputBorder(),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide(
+                borderSide: const BorderSide(
                   color: Colors.transparent,
                 ),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide(
+                borderSide: const BorderSide(
                   color: Colors.transparent,
                 ),
               ),
               fillColor: Colors.white.withOpacity(0.5),
-              prefixIcon: Padding(
-                padding: EdgeInsets.only(top: 15), // add padding to adjust icon
-                child: Icon(
+              prefixIcon: const Icon(
                   Icons.phone,
                   color: Colors.white,
                 ),
-              ),
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           TextFormField(
             obscureText: true,
             cursorColor: Colors.white,
@@ -80,31 +78,28 @@ class _LoginFormState extends State<LoginForm> {
               floatingLabelBehavior: FloatingLabelBehavior.never,
               filled: true,
               labelText: 'Mật khẩu',
-              hintStyle: TextStyle(color: Colors.white),
-              border: OutlineInputBorder(),
+              hintStyle: const TextStyle(color: Colors.white),
+              border: const OutlineInputBorder(),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide(
+                borderSide: const BorderSide(
                   color: Colors.transparent,
                 ),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide(
+                borderSide: const BorderSide(
                   color: Colors.transparent,
                 ),
               ),
               fillColor: Colors.white.withOpacity(0.5),
-              prefixIcon: Padding(
-                padding: EdgeInsets.only(top: 8), // add padding to adjust icon
-                child: Icon(
+              prefixIcon: const Icon(
                   Icons.lock_outline_rounded,
                   color: Colors.white,
                 ),
-              ),
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           if (widget.isSignup == true)
              Column(
               children: [
@@ -128,22 +123,22 @@ class _LoginFormState extends State<LoginForm> {
                     floatingLabelBehavior: FloatingLabelBehavior.never,
                     filled: true,
                     labelText: 'Nhập lại mật khẩu',
-                    hintStyle: TextStyle(color: Colors.white),
-                    border: OutlineInputBorder(),
+                    hintStyle: const TextStyle(color: Colors.white),
+                    border: const OutlineInputBorder(),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
+                      borderSide: const BorderSide(
                         color: Colors.transparent,
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
+                      borderSide: const BorderSide(
                         color: Colors.transparent,
                       ),
                     ),
                     fillColor: Colors.white.withOpacity(0.5),
-                    prefixIcon: Padding(
+                    prefixIcon: const Padding(
                       padding: EdgeInsets.only(top: 8), // add padding to adjust icon
                       child: Icon(
                         Icons.lock_outline_rounded,
@@ -152,7 +147,7 @@ class _LoginFormState extends State<LoginForm> {
                     ),
                   ),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
               ],
             ),
           SizedBox(

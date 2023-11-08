@@ -8,11 +8,16 @@ import 'dart:convert';
 // import 'package:booking_app_mobile/models/yard_model.dart';
 // import 'package:booking_app_mobile/constant/values.dart';
 // import 'package:booking_app_mobile/models/yard_simple.dart';
+import 'package:bidbay_mobile/models/auction_simple_model.dart';
 import 'package:http/http.dart' as http;
 
 //Mock service that works with mock data stores for testing.
 class Service {
   // Methods for place entity
+
+  // Future<Auction> getAuctions() async {
+      
+  // }
 
   // Future<Yard?> getYard(String yardId) async {
   //   final response = await http.get(Uri.parse('$apiServer/yards/$yardId'));
