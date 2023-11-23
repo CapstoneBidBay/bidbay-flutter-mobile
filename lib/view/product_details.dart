@@ -1,184 +1,55 @@
 // ignore_for_file: prefer_const_constructors
-
-import 'package:bidbay_mobile/common/color.dart';
-import 'package:bidbay_mobile/common/contract.dart';
 import 'package:bidbay_mobile/common/util_functions.dart';
 import 'package:bidbay_mobile/common/values.dart';
+import 'package:bidbay_mobile/cubit/auction_detail.cubit.dart';
+import 'package:bidbay_mobile/cubit/bid_history_cubit.dart';
 import 'package:bidbay_mobile/models/auction_simple_model.dart';
+import 'package:bidbay_mobile/models/auto_auction_info_model.dart';
+import 'package:bidbay_mobile/models/bid_history_model.dart';
+import 'package:bidbay_mobile/utils/toast_message.dart';
 import 'package:bidbay_mobile/widgets/auction_type_badge.dart';
 import 'package:bidbay_mobile/widgets/auto_auction_form.dart';
+import 'package:bidbay_mobile/widgets/loading.dart';
 import 'package:bidbay_mobile/widgets/manual_auction_form.dart';
 import 'package:bidbay_mobile/widgets/star_rating_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:google_fonts/google_fonts.dart';
 import 'package:ionicons/ionicons.dart';
 
-class ProductDetailsView extends StatelessWidget {
+class ProductDetailsView extends StatefulWidget {
   final Auction auction;
 
-  const ProductDetailsView({Key? key, required this.auction}) : super(key: key);
+  ProductDetailsView({Key? key, required this.auction}) : super(key: key);
 
   @override
+  State<ProductDetailsView> createState() => _ProductDetailsViewState();
+}
+
+class _ProductDetailsViewState extends State<ProductDetailsView> {
+  late BidHistoryModel bidHistoryModel;
+  AutoAuctionInfo autoAuctionInfo = AutoAuctionInfo.noData();
+  late Auction auctionState;
+
+  @override
+  void initState(){
+    auctionState = widget.auction;
+    super.initState();
+  }
+  
+  @override
   Widget build(BuildContext context) {
-    void showConfirmDialog(){
-      showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Bạn có chắc chắn muốn mua ngay sản phẩm này không?'),
-          contentPadding: EdgeInsets.fromLTRB(5, 5, 5, 5),
-          actions: [
-            TextButton(
-              child: Text('Không'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text('Có'),
-              onPressed: () {
-                //
-              },
-            ),
-          ],
-        );
-      },
-    );
-    }
-    void onPlaceBidClick(String bidType) {
-      showModalBottomSheet<void>(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-          context: context,
-          builder: (BuildContext context) {
-            return Container(
-              color: Color.fromARGB(19, 119, 127, 143),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    const Text(
-                      'Tiến hành đấu giá',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-                    ),
-                    SizedBox(height: 15,),
-                    Container(
-                      decoration: BoxDecoration(
-                          border: Border(
-                              top: BorderSide(width: 0.5),
-                              bottom: BorderSide(width: 0.5))),
-                      // height: 200,
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            bidType == AUTO_PLACE_BID ?
-                            AutoAuctionForm(
-                              onSubmit: (maxPrice, delayTime, jump){
-                                print("Max price: ${maxPrice}");
-                                print("Delay time: ${delayTime}");
-                                print("Jump: ${jump}");
-                              },
-                              maxPrice: 100000,
-                              delayTime: 2,
-                              jump: 10000,
-                            ) :
-                            ManualAuctionForm(onSubmit: (data){
-                              print("Place bid: ${data}");
-                            }),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          });
-    }
-    void showHistory() {
-      showModalBottomSheet<void>(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-          context: context,
-          builder: (BuildContext context) {
-            return Container(
-              color: Color.fromARGB(19, 119, 127, 143),
-              height: 500,
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      const Text(
-                        'Lịch sử đấu giá',
-                        style:
-                            TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-                      ),
-                      SizedBox(height: 15,),
-                      DataTable(
-                        columns: const [
-                          DataColumn(label: Text('SĐT')),
-                          DataColumn(label: Text('Giá')),
-                          DataColumn(label: Text('Loại')),
-                        ],
-                        rows: const [
-                          DataRow(cells: [
-                            DataCell(Text("9xxx1(84)")),
-                            DataCell(Text("100.000")),
-                            DataCell(Text("Tự động")),
-                          ]),
-                          DataRow(cells: [
-                            DataCell(Text("9xxx1(84)")),
-                            DataCell(Text("100.000")),
-                            DataCell(Text("Tự động")),
-                          ]),
-                          DataRow(cells: [
-                            DataCell(Text("9xxx1(84)")),
-                            DataCell(Text("100.000")),
-                            DataCell(Text("Tự động")),
-                          ]),
-                          DataRow(cells: [
-                            DataCell(Text("9xxx1(84)")),
-                            DataCell(Text("100.000")),
-                            DataCell(Text("Tự động")),
-                          ]),
-                          DataRow(cells: [
-                            DataCell(Text("9xxx1(84)")),
-                            DataCell(Text("100.000")),
-                            DataCell(Text("Tự động")),
-                          ]),
-                          DataRow(cells: [
-                            DataCell(Text("9xxx1(84)")),
-                            DataCell(Text("100.000")),
-                            DataCell(Text("Tự động")),
-                          ]),
-                          DataRow(cells: [
-                            DataCell(Text("9xxx1(84)")),
-                            DataCell(Text("100.000")),
-                            DataCell(Text("Tự động")),
-                          ]),
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            );
-          });
-    }
-    return Scaffold(
-      backgroundColor: AppColors.kBgColor,
+    return BlocBuilder<AuctionDetailStaticCubit, AuctionDetailStaticState>(builder: (context, state) {
+      if(state is LoadingAuctionDetailStaticState){
+        return Loading();
+      }
+      if(state is LoadedAuctionDetailStaticState){
+        auctionState = state.detail;
+      }
+      return Scaffold(
+      backgroundColor:Colors.white,
       appBar: AppBar(
-        backgroundColor: AppColors.kBgColor,
+        backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
           onPressed: () {
@@ -191,7 +62,9 @@ class ProductDetailsView extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              
+            },
             icon: const Icon(
               Ionicons.bag_outline,
               color: Colors.black,
@@ -206,7 +79,7 @@ class ProductDetailsView extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 30),
             width: double.infinity,
             child: Image.network(
-                auction.images.first,
+                auctionState.images.first,
                 fit: BoxFit.cover),
           ),
           Expanded(
@@ -215,7 +88,7 @@ class ProductDetailsView extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.only(top: 30, right: 14, left: 14),
                   decoration: const BoxDecoration(
-                    color: Colors.white,
+                    color: Color.fromARGB(31, 129, 127, 127),
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(30),
                       topRight: Radius.circular(30),
@@ -230,9 +103,11 @@ class ProductDetailsView extends StatelessWidget {
                           children: [
                             Container(
                                 padding: EdgeInsets.all(10),
-                                child: AuctionTypeBadge(auctionType: auction.modelType,)),
+                                child: AuctionTypeBadge(auctionType: auctionState.modelType,)),
                             IconButton(
                               onPressed: () {
+                                BidHistoryCubit bidHistoryCubit = BlocProvider.of<BidHistoryCubit>(context);
+                                bidHistoryCubit.getHistory(auctionState.id);
                                 showHistory();
                               },
                               icon: const Icon(
@@ -246,8 +121,8 @@ class ProductDetailsView extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              auction.productName,
-                              style: GoogleFonts.poppins(
+                              auctionState.productName,
+                              style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -258,59 +133,122 @@ class ProductDetailsView extends StatelessWidget {
                         StarRatingBar(rating: 5, size: 18),
                         const SizedBox(height: 15),
                         Text(
-                          auction.productDescription,
-                          style: GoogleFonts.poppins(
+                          auctionState.productDescription,
+                          style: TextStyle(
                             fontSize: 15,
-                            color: Colors.grey,
+                            color: Colors.black,
                           ),
                         ),
                         const SizedBox(height: 15),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Giá hiện tại:',
-                              style: GoogleFonts.poppins(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color.fromARGB(255, 4, 80, 244)),
-                            ),
-                            Text(
-                              formatCurrency(auction.currentPrice == 0 ? auction.startPrice : auction.currentPrice),
-                              style: GoogleFonts.poppins(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color.fromARGB(255, 243, 57, 57)),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Giá mua ngay:',
-                              style: GoogleFonts.poppins(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color.fromARGB(255, 4, 80, 244)),
-                            ),
-                            Text(
-                              formatCurrency(auction.buyNowPrice),
-                              style: GoogleFonts.poppins(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color.fromARGB(255, 243, 57, 57)),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          'Đặt lần cuối bởi 94xxxxxxxxxxx - 2/11/2023 20:00:00',
-                          style: GoogleFonts.poppins(
-                              fontSize: 15,
-                              color: Colors.grey,
-                              fontStyle: FontStyle.italic),
+                        Container(
+                          padding: const EdgeInsets.all(10.0),
+                          decoration: BoxDecoration(
+                            color: Colors.black12,
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Số người đặt giá tối thiểu:',
+                                    style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color.fromARGB(255, 4, 80, 244),
+                                    ),
+                                  ),
+                                  Text(
+                                    auctionState.minimumAuctioneers.toString(),
+                                    style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color.fromARGB(255, 243, 57, 57),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Giá hiện tại:',
+                                    style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color.fromARGB(255, 4, 80, 244),
+                                    ),
+                                  ),
+                                  Text(
+                                    formatCurrency(auctionState.currentPrice == 0
+                                        ? auctionState.startPrice
+                                        : auctionState.currentPrice),
+                                    style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color.fromARGB(255, 243, 57, 57),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Bước nhảy:',
+                                    style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color.fromARGB(255, 4, 80, 244),
+                                    ),
+                                  ),
+                                  Text(
+                                    formatCurrency(auctionState.jump),
+                                    style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color.fromARGB(255, 243, 57, 57),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Giá mua ngay:',
+                                    style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color.fromARGB(255, 4, 80, 244),
+                                    ),
+                                  ),
+                                  Text(
+                                    formatCurrency(auctionState.buyNowPrice),
+                                    style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color.fromARGB(255, 243, 57, 57),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                auctionState.lastBidDetail,
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.black,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                         const SizedBox(height: 30),
                       ],
@@ -324,7 +262,7 @@ class ProductDetailsView extends StatelessWidget {
                     width: 50,
                     height: 5,
                     decoration: BoxDecoration(
-                      color: AppColors.kGreyColor,
+                      color: Colors.brown,
                       borderRadius: BorderRadius.circular(50),
                     ),
                   ),
@@ -336,7 +274,7 @@ class ProductDetailsView extends StatelessWidget {
       ),
       bottomNavigationBar: Container(
         height: 70,
-        color: Colors.white,
+        color: Color.fromARGB(31, 129, 127, 127),
         padding: EdgeInsets.all(10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -354,7 +292,7 @@ class ProductDetailsView extends StatelessWidget {
                   ),
                   child: Text(
                     'Mua ngay',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w500,
                       color: Colors.white,
@@ -376,8 +314,8 @@ class ProductDetailsView extends StatelessWidget {
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: Text(
-                    'Đấu giá thủ công',
-                    style: GoogleFonts.poppins(
+                    'Đấu giá',
+                    style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                       color: Colors.white,
@@ -400,12 +338,217 @@ class ProductDetailsView extends StatelessWidget {
                   ),
                   child: Text(
                     'Đấu giá tự động',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                       color: Colors.white,
                     ),
                   ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  });
+  }
+  void showConfirmDialog(){
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Bạn có chắc chắn muốn mua ngay sản phẩm này không?'),
+          contentPadding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+          actions: [
+            TextButton(
+              child: Text('Không'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Có'),
+              onPressed: () {
+                //
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+  void onPlaceBidClick(String bidType) {
+    AuctionDetailStaticCubit auctionDetailStaticCubit = BlocProvider.of<AuctionDetailStaticCubit>(context);
+    if(bidType == AUTO_PLACE_BID){
+      auctionDetailStaticCubit.getAutoBidDetail(auctionState.id);
+    } else {
+      auctionDetailStaticCubit.manualMode();
+    }
+    showModalBottomSheet<void>(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      context: context,
+      builder: (BuildContext context) {
+        return BlocBuilder<AuctionDetailStaticCubit, AuctionDetailStaticState>(builder: (context, state) {
+          if(state is LoadingBidState){
+            return Loading();
+          }
+          if(state is LoadedAutoAuctionDataState){
+            return buildAutoAuctionBid(state.autoAuctionInfo);
+          }
+          if(state is PlacedManualBidState || state is HandledAutoAuctionState){
+            if(state is PlacedManualBidState){
+              if(state.isSuccess){
+                ToastMessageHelper.toastSuccessShortMessage("Đặt đấu giá thành công");
+              } else {
+                ToastMessageHelper.toastErrorShortMessage("Đặt đấu giá thất bại, vui lòng thử lại");
+              }
+            } else if(state is HandledAutoAuctionState) {
+              if(state.isSuccess){
+                ToastMessageHelper.toastSuccessShortMessage("Đặt đấu giá thành công");
+              } else {
+                ToastMessageHelper.toastErrorShortMessage("Đặt đấu giá thất bại, vui lòng thử lại");
+              }
+            }
+            auctionDetailStaticCubit.getAuctionDetail(auctionState.id);
+            Navigator.pop(context);
+          }
+          return buildManualAuctionInfo();
+        });
+      }
+    );
+  }
+  void showHistory() {
+    showModalBottomSheet<void>(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      context: context,
+      builder: (BuildContext context) {
+        return BlocBuilder<BidHistoryCubit, BidHistoryState>(builder: (context, state) {
+          if(state is LoadingBidHistoryState){
+            return Loading();
+          }
+          if(state is LoadedBidHistoryState){
+            bidHistoryModel = state.bidHistoryModel;
+          }
+            return Container(
+            color: Color.fromARGB(19, 119, 127, 143),
+            height: 500,
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    const Text(
+                      'Lịch sử đấu giá',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                    ),
+                    SizedBox(height: 15,),
+                    DataTable(
+                      columns: const [
+                        DataColumn(label: Text('SĐT')),
+                        DataColumn(label: Text('Giá')),
+                        DataColumn(label: Text('Loại')),
+                      ],
+                      rows: bidHistoryModel.bidHistoryInfos.map(
+                        (info) => DataRow(cells: [
+                          DataCell(Text(info.idBidder)),
+                          DataCell(Text(info.bidAmount.toStringAsFixed(0))),
+                          DataCell(Text(info.auctionType)),
+                        ])).toList()
+                    )
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
+      });
+    }
+  Widget buildAutoAuctionBid(AutoAuctionInfo autoAuctionInfo){
+    return Container(
+      color: Color.fromARGB(19, 119, 127, 143),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            const Text(
+              'Tiến hành đấu giá',
+              style:
+                  TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+            ),
+            SizedBox(height: 15,),
+            Container(
+              decoration: BoxDecoration(
+                  border: Border(
+                      top: BorderSide(width: 0.5),
+                      bottom: BorderSide(width: 0.5))),
+              // height: 200,
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    AutoAuctionForm(
+                      onSubmit: (autoAuctionId, maxPrice, delayTime, jump){
+                        AuctionDetailStaticCubit auctionDetailStaticCubit = BlocProvider.of<AuctionDetailStaticCubit>(context);
+                        if(autoAuctionId != null){
+                          auctionDetailStaticCubit.updateAutoBid(autoAuctionId, AutoAuctionInfo(autoAuctionId, maxPrice, delayTime, jump));
+                        } else {
+                          auctionDetailStaticCubit.placeAutoBid(auctionState.id, AutoAuctionInfo(null, maxPrice, delayTime, jump));
+                        }
+                      },
+                      autoAuctionInfo: autoAuctionInfo,
+                    )
+                  ]
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildManualAuctionInfo() {
+    return Container(
+      color: Color.fromARGB(19, 119, 127, 143),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            const Text(
+              'Tiến hành đấu giá',
+              style:
+                  TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+            ),
+            SizedBox(height: 15,),
+            Container(
+              decoration: BoxDecoration(
+                  border: Border(
+                      top: BorderSide(width: 0.5),
+                      bottom: BorderSide(width: 0.5))),
+              // height: 200,
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    ManualAuctionForm(onSubmit: (data){
+                      AuctionDetailStaticCubit auctionDetailStaticCubit = BlocProvider.of<AuctionDetailStaticCubit>(context);
+                      auctionDetailStaticCubit.placeManualBid(auctionState.id, data);
+                    }),
+                  ]
                 ),
               ),
             ),

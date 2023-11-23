@@ -1,11 +1,10 @@
+import 'package:bidbay_mobile/models/auto_auction_info_model.dart';
 import 'package:flutter/material.dart';
 
 class AutoAuctionForm extends StatefulWidget {
-  final void Function(int, int, int) onSubmit;
-  final int? maxPrice;
-  final int? delayTime;
-  final int? jump;
-  const AutoAuctionForm({super.key, required this.onSubmit, this.maxPrice, this.delayTime, this.jump});
+  final void Function(String?, int, int, int) onSubmit;
+  final AutoAuctionInfo autoAuctionInfo;
+  const AutoAuctionForm({super.key, required this.onSubmit, required this.autoAuctionInfo});
 
   @override
   _AutoAuctionFormState createState() => _AutoAuctionFormState();
@@ -20,9 +19,9 @@ class _AutoAuctionFormState extends State<AutoAuctionForm> {
   @override
   void initState(){
     super.initState();
-    _maxPrice = widget.maxPrice ?? 0;
-    _delayTime = widget.delayTime ?? 0;
-    _jump = widget.jump ?? 0;
+    _maxPrice = widget.autoAuctionInfo.maxPrice;
+    _delayTime = widget.autoAuctionInfo.delayTime;
+    _jump = widget.autoAuctionInfo.jump;
   }
 
   @override
@@ -35,7 +34,7 @@ class _AutoAuctionFormState extends State<AutoAuctionForm> {
           TextFormField(
             cursorColor: Colors.white,
             keyboardType: TextInputType.number,
-            initialValue: widget.maxPrice?.toString(),
+            initialValue: widget.autoAuctionInfo.maxPrice.toString(),
             validator: (value) {
               if (value == null || int.tryParse(value) == null || int.parse(value) <= 0) {
                 return 'Giá tiền không hợp lệ';
@@ -69,7 +68,7 @@ class _AutoAuctionFormState extends State<AutoAuctionForm> {
           TextFormField(
             cursorColor: Colors.white,
             keyboardType: TextInputType.number,
-            initialValue: widget.delayTime?.toString(),
+            initialValue: widget.autoAuctionInfo.delayTime.toString(),
             validator: (value) {
               if (value == null || int.tryParse(value) == null || int.parse(value) < 0) {
                 return 'Thời gian không hợp lệ';
@@ -103,7 +102,7 @@ class _AutoAuctionFormState extends State<AutoAuctionForm> {
           TextFormField(
             cursorColor: Colors.white,
             keyboardType: TextInputType.number,
-            initialValue: widget.jump?.toString(),
+            initialValue: widget.autoAuctionInfo.jump.toString(),
             validator: (value) {
               if (value == null || int.tryParse(value) == null || int.parse(value) <= 0) {
                 return 'Giá tiền không hợp lệ';
@@ -139,7 +138,7 @@ class _AutoAuctionFormState extends State<AutoAuctionForm> {
             height: 50,
             child: ElevatedButton(
               onPressed: () {
-                widget.onSubmit(_maxPrice, _delayTime, _jump);
+                widget.onSubmit(widget.autoAuctionInfo.id, _maxPrice, _delayTime, _jump);
               },
               style: ButtonStyle(
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(

@@ -23,7 +23,6 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
     final cubit = BlocProvider.of<AuthenticationCubit>(context);
     Future<void> _verifyOTP() async {
       String otp = _otpController.text;
-      print(otp);
       //final storage = FlutterSecureStorage();
       //var jwtToken = await storage.read(key: JWT_STORAGE_KEY);
       var isVerified = await cubit.verifyOtp(otp, JWT_TOKEN_VALUE);

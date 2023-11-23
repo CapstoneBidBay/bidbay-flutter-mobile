@@ -9,17 +9,15 @@ class StarRatingBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = Theme.of(context).colorScheme.primary;
-
     return RatingBar(
       allowHalfRating: true,
       initialRating: rating,
       ignoreGestures: true,
       itemSize: size,
       ratingWidget: RatingWidget(
-          full: Icon(Icons.star, color: Color.fromARGB(255, 237, 226, 76)),
-          half: Icon(Icons.star_half, color: Color.fromARGB(255, 237, 226, 76)),
-          empty: Icon(Icons.star_outline, color: Color.fromARGB(255, 237, 226, 76))),
+          full: const Icon(Icons.star, color: Color.fromARGB(255, 222, 67, 44)),
+          half: const Icon(Icons.star_half, color: Color.fromARGB(255, 237, 226, 76)),
+          empty: const Icon(Icons.star_outline, color: Color.fromARGB(255, 0, 0, 0))),
       onRatingUpdate: (_) {},
     );
   }

@@ -5,7 +5,7 @@ import 'package:http_interceptor/http_interceptor.dart';
 class MyHttpClient {
   static Client? _client;
   static void _initClient() {
-    _client ??= InterceptedClient.build(interceptors: [AuthenticatedInterceptor()]);
+    _client ??= InterceptedClient.build(interceptors: [AuthenticatedInterceptor()], requestTimeout: const Duration(hours: 1));
   }
   static Client getClient() {
     if(_client == null){

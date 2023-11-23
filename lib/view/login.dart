@@ -15,7 +15,6 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final cubit = BlocProvider.of<AuthenticationCubit>(context);
     Future<void> handleLoginFormSubmit(String email, String password) async {
-      print("checkin handleLoginForm");
       await cubit.login(email, password);
       //final storage = FlutterSecureStorage();
       // var isConfirm = await storage.read(key: IS_CONFIRM_STORAGE_KEY);

@@ -31,8 +31,8 @@ class UserService {
     }
   }
   Future<void> signIn(String email, String password) async {
-    print("check in function");
-    print('$apiUrl/public/auth/login');
+    // print("check in function");
+    // print('$apiUrl/public/auth/login');
     final response = await http.post(
       Uri.parse('$apiUrl/public/auth/login'),
       headers: <String, String>{
@@ -97,8 +97,8 @@ class UserService {
       }
       ),
     );
-    print(response.statusCode);
-    print(response.body);
+    // print(response.statusCode);
+    // print(response.body);
     if (response.statusCode == 200) {
       return true;
     } else {

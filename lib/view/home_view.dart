@@ -49,7 +49,6 @@ class HomePageState extends State<HomePage> {
   Widget buildHomePage() {
     final cubit = BlocProvider.of<AuthenticationCubit>(context);
     Future<void> handleLogout(BuildContext context) async {
-      print("logout");
       //final storage = FlutterSecureStorage();
       //var token = await storage.read(key: JWT_STORAGE_KEY);
       var token = JWT_TOKEN_VALUE;

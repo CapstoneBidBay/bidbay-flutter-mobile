@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:bidbay_mobile/common/values.dart';
 
 class Auction {
@@ -13,16 +11,16 @@ class Auction {
   final int numOfBids;
   final int numOfAuctioneers;
   final int minimumAuctioneers;
-
   final String productName;
   final String productDescription;
   final String productBrandName;
   final List<String> images;
+  final String lastBidDetail;
 
   Auction(this.id, this.timeRemain, this.modelType,
   this.currentPrice, this.startPrice, this.buyNowPrice,
   this.jump, this.numOfBids, this.numOfAuctioneers, 
-  this.minimumAuctioneers, this.productName, this.productDescription, this.productBrandName, this.images);
+  this.minimumAuctioneers, this.productName, this.productDescription, this.productBrandName, this.images, this.lastBidDetail);
 
   factory Auction.fromJson(Map<String, dynamic> jsonInput) {
     // MAP FROM JSON LOGIC HERE
@@ -43,7 +41,8 @@ class Auction {
       jsonInput["product"]["name"].toString(),
       jsonInput["product"]["description"].toString(),
       jsonInput["product"]["brand"]["name"].toString(),
-      productImages == null ? [NO_IMAGE_URL] : productImages.map((img)=> img == null ? NO_IMAGE_URL : img as String).toList()
+      productImages == null ? [NO_IMAGE_URL] : productImages.map((img)=> img == null ? NO_IMAGE_URL : img as String).toList(),
+      jsonInput["lastBidDetail"]
     );
   }
 }

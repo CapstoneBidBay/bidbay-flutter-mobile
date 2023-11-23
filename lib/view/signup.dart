@@ -13,7 +13,6 @@ class SignupScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final cubit = BlocProvider.of<AuthenticationCubit>(context);
     Future<void> handleRegisterForm(String email, String password, String confirmPassword, String fullname, String phoneNumber) async {
-      print("checkin handleLoginForm");
       var isSignup = await cubit.register(email, password, confirmPassword, fullname, phoneNumber);
       if (isSignup) {
         Navigator.pushReplacementNamed(context, LoginScreen.routeName);

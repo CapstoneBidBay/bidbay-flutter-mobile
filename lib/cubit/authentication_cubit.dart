@@ -1,6 +1,7 @@
 import 'package:bidbay_mobile/common/values.dart';
 import 'package:bidbay_mobile/cubit/authentication_state.dart';
 import 'package:bidbay_mobile/service/user_service.dart';
+import 'package:bidbay_mobile/utils/toast_message.dart';
 import 'package:bloc/bloc.dart';
 
 
@@ -19,6 +20,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       var isConfirm = IS_CONFIRM_VALUE; 
       emit(Authenticated(isConfirm: isConfirm == 'true'));
     } catch (e) {
+      ToastMessageHelper.toastErrorShortMessage("Sai tên tài khoản, mật khẩu hoặc tài khoản đã bị ban");
       emit(LoginFailed(error: e.toString()));
       rethrow;
     }

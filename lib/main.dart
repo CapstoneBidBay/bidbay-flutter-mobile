@@ -12,7 +12,7 @@ void main() {
   setupLocator();
   AuctionService auctionService = getIt<AuctionService>();
   auctionService.getBrands();
-  auctionService.getCategories();
+  auctionService.getCategories(); 
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }

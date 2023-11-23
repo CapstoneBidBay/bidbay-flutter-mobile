@@ -11,13 +11,17 @@ class Loading extends StatelessWidget {
         ?.copyWith(color: Colors.green);
 
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const CircularProgressIndicator(),
-          const SizedBox(height: 16.0),
-          Text('loading...', style: secondaryTitleLarge),
-        ],
+      child: Container(
+        color: Colors.white.withOpacity(0.5),
+        width: double.infinity,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const CircularProgressIndicator(),
+            const SizedBox(height: 16.0),
+            Text('loading...', style: secondaryTitleLarge),
+          ],
+        ),
       ),
     );
   }

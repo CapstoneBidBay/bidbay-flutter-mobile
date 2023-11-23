@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class BrandModel {
   final String id;
   final String description;
