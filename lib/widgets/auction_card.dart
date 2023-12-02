@@ -179,7 +179,7 @@ class _AuctionCardState extends State<AuctionCard>
                         children: [
                           Text(widget.auctionData.productName, style: const TextStyle(fontSize: 24, color: Colors.white), maxLines: 1, overflow: TextOverflow.ellipsis,),
                           const SizedBox(height: 5,),
-                          const StarRatingBar(rating: 5.0, size: 24),
+                          // const StarRatingBar(rating: 5.0, size: 24),
                         ],
                       ),
                     ],

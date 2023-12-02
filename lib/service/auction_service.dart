@@ -11,8 +11,20 @@ import 'package:bidbay_mobile/service/http/my_http_client.dart';
 import 'package:http/http.dart' as http;
 
 class AuctionService {
+  Future<List<Auction>> getHotAuctions() async {
+    String serviceUrl = "$apiServer/guest/auctions-guest/list-descending-priority-auction";
+    final response = await MyHttpClient.getClient().get(Uri.parse(serviceUrl));
+    if(response.statusCode >= 200 && response.statusCode < 300){
+      final responseBody = json.decode(utf8.decode(response.bodyBytes));
+      if(responseBody['data'] != null){
+        return responseBody['data'].map((data) => Auction.fromJson(data)).toList().cast<Auction>();
+      }
+    }
+    return [];
+  }
+
   Future<List<Auction>> getAuctions(String searchKey, FilterData filterData) async {
-    String serviceUrl = "$apiServer/auctions?page=1&size=1000&";
+    String serviceUrl = "$apiServer/guest/auctions-guest?page=1&size=1000&";
     String queryBuilt = _buildQueryParams(searchKey.trim(), filterData);
     serviceUrl += queryBuilt;
     // build query param

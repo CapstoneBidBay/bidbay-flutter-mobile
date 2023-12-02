@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bidbay_mobile/common/values.dart';
 import 'package:bidbay_mobile/cubit/auction_list_cubit.dart';
+import 'package:bidbay_mobile/cubit/hot_auction_list_cubit.dart';
 import 'package:bidbay_mobile/models/auction_simple_model.dart';
 import 'package:bidbay_mobile/models/filter_model.dart';
 import 'package:bidbay_mobile/view/login.dart';
@@ -24,6 +25,7 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   List<Auction> auctions = [];
+  List<Auction> hotAuctions = [];
 
   String searchKey = "";
   FilterData filterData = FilterData();
@@ -82,7 +84,7 @@ class HomePageState extends State<HomePage> {
               const SizedBox(
                 height: 10,
               ),
-              buildStaticYardList(),
+              buildHotStaticYardList(),
               const ContentTitle(title: 'Đấu giá nổi bật...'),
               buildStaticYardList(),
               //DistrictProvinceSelection(key: UniqueKey(),),
@@ -156,6 +158,37 @@ class HomePageState extends State<HomePage> {
                 itemCount: auctions.length,
                 itemBuilder: (BuildContext context, int index) {
                   return AuctionCard(auctionData: auctions[index]);
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+   Widget buildHotStaticYardList() {
+    HotAuctionListStaticCubit auctionListStaticCubit = BlocProvider.of<HotAuctionListStaticCubit>(context);
+    auctionListStaticCubit.getYardList();
+
+    return BlocBuilder<HotAuctionListStaticCubit, HotAuctionListStaticState>(
+      builder: (context, state){
+        if(state is LoadingHotAuctionListStaticState){
+          return const Loading();
+        }
+        if(state is LoadedHotAuctionListStaticState){
+          hotAuctions = state.auctions;
+        }
+        return Column(
+          children: [
+            SizedBox(
+              height: 300,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                itemCount: hotAuctions.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return AuctionCard(auctionData: hotAuctions[index]);
                 },
               ),
             ),
