@@ -25,7 +25,7 @@ class AuctionDetailStaticCubit extends Cubit<AuctionDetailStaticState> {
     try {
       await service.placeManualBid(auctionId, price);
       emit(const PlacedManualBidState(true));
-    } catch (e) {
+    } catch (_) {
       emit(const PlacedManualBidState(false));
     }
   }
@@ -44,7 +44,7 @@ class AuctionDetailStaticCubit extends Cubit<AuctionDetailStaticState> {
     try {
       await service.createAutoBid(auctionId, autoAuctionInfo);
       emit(const HandledAutoAuctionState(true));
-    } catch (e) {
+    } catch (_) {
       emit(const HandledAutoAuctionState(false));
     }
   }
@@ -55,8 +55,19 @@ class AuctionDetailStaticCubit extends Cubit<AuctionDetailStaticState> {
     try {
       await service.updateAutoBid(autoAuctionId, autoAuctionInfo);
       emit(const HandledAutoAuctionState(true));
-    } catch (e) {
+    } catch (_) {
       emit(const HandledAutoAuctionState(false));
+    }
+  }
+
+  Future<void> buyNowBid(String auctionId) async {
+    emit(const LoadingBidState());
+
+    try {
+      await service.buyNowBid(auctionId);
+      emit(const PlacedManualBidState(true));
+    } catch (_) {
+      emit(const PlacedManualBidState(false));
     }
   }
 

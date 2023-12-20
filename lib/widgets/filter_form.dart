@@ -45,20 +45,20 @@ class _FilterFormState extends State<FilterForm> {
             options: categoryOptions,
             onChanged: (val) {
               setState(() {
-                filterData.brandId = val;
+                filterData.categoryId = val;
               });
             },
-            initValue: widget.data.brandId ?? "",
+            initValue: widget.data.categoryId ?? "",
           ),
           const SizedBox(height: 20),
           MyDropdownButton(
             options: brandOptions,
             onChanged: (val) {
               setState(() {
-                filterData.categoryId = val;
+                filterData.brandId = val;
               });
             },
-            initValue: widget.data.categoryId ?? "",
+            initValue: widget.data.brandId ?? "",
           ),
           const SizedBox(height: 20),
           TextFormField(

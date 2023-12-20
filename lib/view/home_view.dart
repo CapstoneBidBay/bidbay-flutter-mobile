@@ -84,9 +84,9 @@ class HomePageState extends State<HomePage> {
               const SizedBox(
                 height: 10,
               ),
-              buildHotStaticYardList(),
-              const ContentTitle(title: 'Đấu giá nổi bật...'),
               buildStaticYardList(),
+              const ContentTitle(title: 'Đấu giá nổi bật...'),
+              buildHotStaticYardList(),
               //DistrictProvinceSelection(key: UniqueKey(),),
               const SizedBox(
                 height: 10,

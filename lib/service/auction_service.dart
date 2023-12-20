@@ -12,7 +12,7 @@ import 'package:http/http.dart' as http;
 
 class AuctionService {
   Future<List<Auction>> getHotAuctions() async {
-    String serviceUrl = "$apiServer/guest/auctions-guest/list-descending-priority-auction";
+    String serviceUrl = "$apiServer/guest/auctions-guest/list-descending-priority-auction?page=1&size=100";
     final response = await MyHttpClient.getClient().get(Uri.parse(serviceUrl));
     if(response.statusCode >= 200 && response.statusCode < 300){
       final responseBody = json.decode(utf8.decode(response.bodyBytes));
@@ -28,10 +28,12 @@ class AuctionService {
     String queryBuilt = _buildQueryParams(searchKey.trim(), filterData);
     serviceUrl += queryBuilt;
     // build query param
-    // print("Check in 1");
+    print("Check in 1");
+    print(serviceUrl);
     final response = await MyHttpClient.getClient().get(Uri.parse(serviceUrl));
-    // print("Check in 2");
+    print("Check in 2");
     if(response.statusCode >= 200 && response.statusCode < 300){
+      print(response.body);
       final responseBody = json.decode(utf8.decode(response.bodyBytes));
       if(responseBody['data'] != null){
         return responseBody['data'].map((data) => Auction.fromJson(data)).toList().cast<Auction>();
@@ -77,6 +79,18 @@ class AuctionService {
         "auctionId": auctionId
       })
     );
+    //print(response.body);
+    if(response.statusCode != 201){
+      throw Exception("Place bid error.");
+    }
+  }
+
+  Future<void> buyNowBid(String auctionId) async {
+    String serviceUrl = "$apiServer/auctions/$auctionId/direct-purchase-auction";
+    final response = await MyHttpClient.getClient().post(Uri.parse(serviceUrl),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    });
     //print(response.body);
     if(response.statusCode != 201){
       throw Exception("Place bid error.");
@@ -146,6 +160,7 @@ class AuctionService {
     final response = await http.get(Uri.parse(serviceUrl));
     if(response.statusCode >= 200 && response.statusCode < 300){
       final responseBody = json.decode(utf8.decode(response.bodyBytes));
+      print(responseBody);
       return BidHistoryModel.fromJson(responseBody['data']);
     }
     return BidHistoryModel(0, 0, []);

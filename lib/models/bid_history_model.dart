@@ -9,9 +9,9 @@ class BidHistoryModel {
 
   factory BidHistoryModel.fromJson(Map<String, dynamic> json){
     return BidHistoryModel(
-      json['bids'],
-      json['bidders'],
-      json['informationBidderDTOS'].map<BidHistoryInfo>((f) => BidHistoryInfo.fromJson(f)).toList()
+      json['bids'] ?? 0,
+      json['bidders'] ?? 0,
+      json['informationBidderDTOS'] == null ? [] : json['informationBidderDTOS'].map<BidHistoryInfo>((f) => BidHistoryInfo.fromJson(f)).toList()
     );
   }
 }

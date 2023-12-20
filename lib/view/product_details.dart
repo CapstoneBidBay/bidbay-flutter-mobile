@@ -2,10 +2,13 @@
 import 'package:bidbay_mobile/common/util_functions.dart';
 import 'package:bidbay_mobile/common/values.dart';
 import 'package:bidbay_mobile/cubit/auction_detail.cubit.dart';
+import 'package:bidbay_mobile/cubit/auction_list_cubit.dart';
 import 'package:bidbay_mobile/cubit/bid_history_cubit.dart';
+import 'package:bidbay_mobile/cubit/hot_auction_list_cubit.dart';
 import 'package:bidbay_mobile/models/auction_simple_model.dart';
 import 'package:bidbay_mobile/models/auto_auction_info_model.dart';
 import 'package:bidbay_mobile/models/bid_history_model.dart';
+import 'package:bidbay_mobile/models/filter_model.dart';
 import 'package:bidbay_mobile/utils/toast_message.dart';
 import 'package:bidbay_mobile/widgets/auction_type_badge.dart';
 import 'package:bidbay_mobile/widgets/auto_auction_form.dart';
@@ -369,8 +372,16 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
             ),
             TextButton(
               child: Text('Có'),
-              onPressed: () {
-                //
+              onPressed: () async {
+                AuctionDetailStaticCubit auctionDetailStaticCubit = BlocProvider.of<AuctionDetailStaticCubit>(context);
+                await auctionDetailStaticCubit.buyNowBid(widget.auction.id);
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+                AuctionListStaticCubit auctionListStaticCubit = BlocProvider.of<AuctionListStaticCubit>(context);
+                HotAuctionListStaticCubit hotAuctionListStaticCubit = BlocProvider.of<HotAuctionListStaticCubit>(context);
+                auctionListStaticCubit.getYardList("", FilterData());
+                hotAuctionListStaticCubit.getYardList();
+                ToastMessageHelper.toastSuccessShortMessage("Mua ngay thành công");
               },
             ),
           ],
@@ -386,6 +397,7 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
       auctionDetailStaticCubit.manualMode();
     }
     showModalBottomSheet<void>(
+      isScrollControlled: true,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -475,7 +487,7 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
     return Container(
       color: Color.fromARGB(19, 119, 127, 143),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           mainAxisSize: MainAxisSize.min,
@@ -492,26 +504,28 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
                       top: BorderSide(width: 0.5),
                       bottom: BorderSide(width: 0.5))),
               // height: 200,
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    AutoAuctionForm(
-                      onSubmit: (autoAuctionId, maxPrice, delayTime, jump){
-                        AuctionDetailStaticCubit auctionDetailStaticCubit = BlocProvider.of<AuctionDetailStaticCubit>(context);
-                        if(autoAuctionId != null){
-                          auctionDetailStaticCubit.updateAutoBid(autoAuctionId, AutoAuctionInfo(autoAuctionId, maxPrice, delayTime, jump));
-                        } else {
-                          auctionDetailStaticCubit.placeAutoBid(auctionState.id, AutoAuctionInfo(null, maxPrice, delayTime, jump));
-                        }
-                      },
-                      autoAuctionInfo: autoAuctionInfo,
-                    )
-                  ]
+              child:
+                SingleChildScrollView(
+                  reverse: true,
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      AutoAuctionForm(
+                        onSubmit: (autoAuctionId, maxPrice, delayTime, jump){
+                          AuctionDetailStaticCubit auctionDetailStaticCubit = BlocProvider.of<AuctionDetailStaticCubit>(context);
+                          if(autoAuctionId != null){
+                            auctionDetailStaticCubit.updateAutoBid(autoAuctionId, AutoAuctionInfo(autoAuctionId, maxPrice, delayTime, jump));
+                          } else {
+                            auctionDetailStaticCubit.placeAutoBid(auctionState.id, AutoAuctionInfo(null, maxPrice, delayTime, jump));
+                          }
+                        },
+                        autoAuctionInfo: autoAuctionInfo,
+                      )
+                    ]
+                  ),
                 ),
               ),
-            ),
           ],
         ),
       ),
@@ -522,7 +536,8 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
     return Container(
       color: Color.fromARGB(19, 119, 127, 143),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
+        padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           mainAxisSize: MainAxisSize.min,
@@ -540,6 +555,7 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
                       bottom: BorderSide(width: 0.5))),
               // height: 200,
               child: SingleChildScrollView(
+                reverse: true,
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
